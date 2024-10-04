@@ -1,12 +1,13 @@
-from config import openai, AZURE_OPENAI_LLM_MODEL, Flask, request, jsonify, secure_filename, os, tempfile, json
-from conversation import get_conversation_history, list_conversations, update_conversation_thread, delete_conversation_thread, add_system_message_to_conversation
-from content_processing import extract_text_file, extract_markdown_file, extract_content_with_azure_di
-from documents import get_user_documents, upload_permanent_document, get_user_documents, upload_permanent_document
+from config import openai, AZURE_OPENAI_LLM_MODEL, Flask, redirect, jsonify, render_template, request, send_from_directory, url_for, flash, session, jsonify, secure_filename, os, tempfile, json, uuid
+from process_conversation import get_conversation_history, list_conversations, update_conversation_thread, delete_conversation_thread, add_system_message_to_conversation
+from process_content import extract_text_file, extract_markdown_file, extract_content_with_azure_di
+from process_document import get_user_documents, upload_user_document, get_user_documents, delete_user_document, get_user_document
+from process_internet import get_bing_search_results, extract_snippets_from_results
 
 #***************** Flask App *****************
 
 app = Flask(__name__)
-app.config['VERSION'] = '0.21'
+app.config['VERSION'] = '0.29'
 
 #***************** Routes *****************
 
@@ -176,6 +177,57 @@ def chat_file():
 
     return jsonify(response_data), 200
 
+@app.route('/api/chat/internet', methods=['POST'])
+def internet_search():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    question = data.get('question')
+    conversation_id = data.get('conversation_id')  # Frontend can supply this
+
+    if not question:
+        return jsonify({'error': 'Missing question'}), 400
+
+    if not user_id:
+        return jsonify({'error': 'Missing user_id'}), 400
+    
+    if not conversation_id:
+        return jsonify({'error': 'Missing conversation_id'}), 400
+
+    # Fetch search results from Bing Search API
+    search_results = get_bing_search_results(question)
+    if search_results is None:
+        return jsonify({'error': 'Failed to fetch search results'}), 500
+    
+    # Extract snippets and URLs from search results
+    snippets_with_urls = extract_snippets_from_results(search_results)
+    if not snippets_with_urls:
+        return jsonify({'error': 'No relevant information found'}), 404
+    
+    # Format combined_search as a JSON object
+    combined_search = {
+        "question": question,
+        "search_results": [
+            {
+                "snippet": result['snippet'],
+                "url": result['url']
+            } for result in snippets_with_urls
+        ]
+    }
+    
+    try:
+        add_system_message_to_conversation(conversation_id, user_id, json.dumps(combined_search))
+    except Exception as e:
+        return jsonify({'error': f'Error adding search content to conversation: {str(e)}'}), 500
+
+    # Return both the search results added to conversation history and the OpenAI-generated answer
+    response_data = {
+        'message': 'Internet search results added to the conversation history successfully',
+        'search_results': combined_search
+    }
+
+    return jsonify(response_data), 200
+
+
 #***************** Documents *****************
 
 @app.route('/api/documents', methods=['GET', 'POST'])
@@ -190,8 +242,24 @@ def handle_documents():
         return get_user_documents(user_id)
     elif request.method == 'POST':
         # Handle POST request: Upload a new document
-        return upload_permanent_document(user_id)
+        return upload_user_document(user_id)
 
+
+@app.route('/api/documents/<document_id>', methods=['GET', 'DELETE'])
+def handle_specific_document(document_id):
+    # Obtain user_id from authentication context or request
+    user_id = request.form.get('user_id') if request.method == 'DELETE' else request.args.get('user_id')
+
+    if not user_id:
+        return jsonify({'error': 'Missing user_id'}), 400
+
+    if request.method == 'GET':
+        # Handle GET request: Retrieve a specific document
+        return get_user_document(user_id, document_id)
+    
+    elif request.method == 'DELETE':
+        # Handle DELETE request: Delete a specific document
+        return delete_user_document(user_id, document_id)
 
 
 

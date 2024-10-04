@@ -18,8 +18,9 @@ Create APIs for user capabilities first
 - [x] Create openapi yaml file to track API rollout [openapi.yaml](..\artifacts\openapi.yaml)
 - [x] private chat with model (including conversation history)
 - [x] private chat with model add file to chat
+- [x] private chat with model add internet search to chat
 - [x] private RAG (upload file, chunk file, embed chunk)
-- [ ] private chat with internet
+- [x] private chat with internet
 - [ ] private pipeline
 - [ ] share conversation
 - [ ] share pipeline
@@ -63,4 +64,6 @@ Create APIs for user capabilities first
     - pipeline next task can include previous task output or not
     - pipeline can be a single task
 - provide history, logging for security or for analysis on top requests
+
+
 

@@ -1,6 +1,6 @@
 from config import openai, documents_container, jsonify, request, secure_filename, os, tempfile, json, uuid, datetime
-from conversation import get_conversation_history, list_conversations, update_conversation_thread, delete_conversation_thread, add_system_message_to_conversation
-from content_processing import extract_text_file, extract_markdown_file, extract_content_with_azure_di, chunk_text, generate_embedding
+from process_conversation import get_conversation_history, list_conversations, update_conversation_thread, delete_conversation_thread, add_system_message_to_conversation
+from process_content import extract_text_file, extract_markdown_file, extract_content_with_azure_di, chunk_text, generate_embedding
 
 #***************** Functions *****************
 # The functions support document management
@@ -28,7 +28,7 @@ def get_user_documents(user_id):
         print(f"Error fetching documents: {str(e)}")
         return jsonify({'error': 'Error fetching documents'}), 500
 
-def upload_permanent_document(user_id):
+def upload_user_document(user_id):
     file = request.files.get('file')
 
     if not file:
@@ -115,3 +115,39 @@ def process_document_and_store_chunks(extracted_text, file_name, user_id):
 
         # Store the chunk document in 'documents' container
         documents_container.upsert_item(chunk_document)
+
+def get_user_document(user_id, document_id):
+    try:
+        # Retrieve the document from Cosmos DB
+        document = documents_container.read_item(item=document_id, partition_key=document_id)
+        
+        if not document:
+            return jsonify({'error': 'Document not found'}), 404
+
+        # Check if the document belongs to the user
+        if document['user_id'] != user_id:
+            return jsonify({'error': 'Unauthorized access'}), 403
+
+        return jsonify(document), 200
+    except Exception as e:
+        return jsonify({'error': f'Error retrieving document: {str(e)}'}), 500
+
+
+def delete_user_document(user_id, document_id):
+    try:
+        # Retrieve the document from Cosmos DB
+        document = documents_container.read_item(item=document_id, partition_key=document_id)
+        
+        if not document:
+            return jsonify({'error': 'Document not found'}), 404
+
+        # Check if the document belongs to the user
+        if document['user_id'] != user_id:
+            return jsonify({'error': 'Unauthorized access'}), 403
+
+        # Delete the document from Cosmos DB
+        documents_container.delete_item(item=document_id, partition_key=document_id)
+
+        return jsonify({'message': 'Document deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': f'Error deleting document: {str(e)}'}), 500
