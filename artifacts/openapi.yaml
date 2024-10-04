@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: Nexus API
+  version: "0.21"
+  description: API for managing chat conversations and documents
+servers:
+  - url: /api
+
+paths:
+  /api/chat/conversations:
+    get:
+      summary: Get conversations for a user
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Missing user_id
+        '404':
+          description: No conversations found
+
+  /api/chat/conversation/{conversation_id}:
+    get:
+      summary: Get conversation history by conversation_id
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversation history
+        '400':
+          description: Missing user_id
+        '404':
+          description: Conversation not found or access denied
+
+    delete:
+      summary: Delete conversation by conversation_id
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversation deleted successfully
+        '400':
+          description: Missing user_id
+        '404':
+          description: Conversation not found or access denied
+        '500':
+          description: Server error
+
+  /api/chat:
+    post:
+      summary: Post a message to a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                message:
+                  type: string
+                conversation_id:
+                  type: string
+              required:
+                - user_id
+                - message
+                - conversation_id
+      responses:
+        '200':
+          description: Chat response
+        '400':
+          description: Missing user_id or message
+        '500':
+          description: Server error
+
+  /api/chat/file:
+    post:
+      summary: Upload a file to a conversation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                conversation_id:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+              required:
+                - user_id
+                - conversation_id
+                - file
+      responses:
+        '200':
+          description: File content added to conversation
+        '400':
+          description: Missing user_id, file, or conversation_id
+        '403':
+          description: Conversation not found or access denied
+        '500':
+          description: Server error
+
+  /api/documents:
+    get:
+      summary: Get user documents
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of user documents
+        '400':
+          description: Missing user_id
+
+    post:
+      summary: Upload a user document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+              required:
+                - user_id
+                - file
+      responses:
+        '200':
+          description: Document uploaded
+        '400':
+          description: Missing user_id

@@ -1,0 +1,13 @@
+Flask==2.2.2
+gunicorn
+Werkzeug==2.2.2
+requests==2.26.0
+openai==0.27.2
+azure-cosmos==4.3.0
+azure-ai-documentintelligence==1.0.0b4
+Markdown==3.3.4
+msal==1.31.0
+Flask-Session==0.8.0
+bleach==6.1.0
+docx2txt==0.8
+numpy==2.1.1
