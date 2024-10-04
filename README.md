@@ -15,10 +15,11 @@ Nexus empowers enterprises to enhance productivity, ensure efficient information
 # Plans
 Create APIs for user capabilities first
 
-- [x] Create openapi yaml file to track API rollout [openapi.yaml](..\artifacts\openapi.yaml)
+- [x] Create openapi yaml file to track API rollout [openapi.yaml](../artifacts/openapi.yaml)
 - [x] private chat with model (including conversation history)
-- [x] private chat with model add file to chat
-- [x] private chat with model add internet search to chat
+- [x] private chat with model, add file to chat
+- [x] private chat with model, add internet search to chat
+- [x] private chat with model , add one or more specific public websites to search to chat
 - [x] private RAG (upload file, chunk file, embed chunk)
 - [x] private chat with internet
 - [ ] private pipeline
