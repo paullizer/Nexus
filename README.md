@@ -1,4 +1,4 @@
-# Nexus: AI-Powered Enterprise Workflow and Document Generation
+# Nexus
 
 **Nexus** is an AI-powered platform designed to streamline enterprise operations by providing intelligent workflows, document generation, and advanced search capabilities. The application leverages the power of **Cosmos DB** with vector search for personalized Retrieval-Augmented Generation (RAG) and **Azure AI Search** for group-based tasks. 
 
