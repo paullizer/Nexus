@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Nexus API
-  version: "0.42"
+  version: "0.43"
   description: API for managing chat conversations, documents, and internet searches.
 servers:
   - url: /api
@@ -238,10 +238,93 @@ paths:
           description: Missing user_id
         '404':
           description: Document not found
+        '500':
+          description: Error deleting document
+
+  /api/documents/{document_id}/versions:
+    get:
+      summary: Get all versions of a document by document_id
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of document versions
+        '400':
+          description: Missing user_id
+        '404':
+          description: No versions found
+        '500':
+          description: Error retrieving document versions
+
+  /api/documents/{document_id}/version/{version}:
+    get:
+      summary: Get a specific version of a document
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested document version
+        '400':
+          description: Missing user_id
+        '404':
+          description: Document version not found
+        '500':
+          description: Error retrieving document version
+
+    delete:
+      summary: Delete a specific version of a document
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Document version deleted successfully
+        '400':
+          description: Missing user_id
+        '404':
+          description: Document version not found
+        '500':
+          description: Error deleting document version
 
   /api/documents/{document_id}/chunks:
     get:
-      summary: Get document chunks by document_id
+      summary: Get chunks of a document by document_id
       parameters:
         - name: document_id
           in: path
@@ -258,6 +341,37 @@ paths:
           description: The chunks of the requested document
         '400':
           description: Missing user_id
+        '404':
+          description: No chunks found
+        '500':
+          description: Error retrieving chunks
+
+  /api/documents/{document_id}/version/{version}/chunks:
+    get:
+      summary: Get chunks of a specific version of a document
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The chunks of the requested document version
+        '400':
+          description: Missing user_id
+        '404':
+          description: No chunks found for the specified document version
         '500':
           description: Error retrieving chunks
 
