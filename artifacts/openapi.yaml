@@ -7,6 +7,34 @@ servers:
   - url: /api
 
 paths:
+  /api/chat:
+    post:
+      summary: Post a message to a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                message:
+                  type: string
+                conversation_id:
+                  type: string
+              required:
+                - user_id
+                - message
+                - conversation_id
+      responses:
+        '200':
+          description: Chat response
+        '400':
+          description: Missing user_id or message
+        '500':
+          description: Server error
+          
   /api/chat/conversations:
     get:
       summary: Get conversations for a user
@@ -66,34 +94,6 @@ paths:
           description: Missing user_id
         '404':
           description: Conversation not found or access denied
-        '500':
-          description: Server error
-
-  /api/chat:
-    post:
-      summary: Post a message to a conversation
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user_id:
-                  type: string
-                message:
-                  type: string
-                conversation_id:
-                  type: string
-              required:
-                - user_id
-                - message
-                - conversation_id
-      responses:
-        '200':
-          description: Chat response
-        '400':
-          description: Missing user_id or message
         '500':
           description: Server error
 

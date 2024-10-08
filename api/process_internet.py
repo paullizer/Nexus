@@ -9,7 +9,7 @@ def get_bing_search_results(query):
         search_results = response.json()
         return search_results
     except Exception as e:
-        print(f"Error fetching search results: {e}")
+        #print(f"Error fetching search results: {e}")
         return None
 
 def extract_snippets_from_results(search_results):

@@ -13,14 +13,14 @@ def get_conversation_history(conversation_id, user_id):
         
         # Verify that the user_id matches
         if conversation_doc['user_id'] != user_id:
-            print(f"Unauthorized access attempt by user {user_id} on conversation {conversation_id}")
+            #print(f"Unauthorized access attempt by user {user_id} on conversation {conversation_id}")
             return None  # Or raise an exception
         
         return conversation_doc
     except exceptions.CosmosResourceNotFoundError:
         return None
     except Exception as e:
-        print(f"Error retrieving conversation history: {str(e)}")
+        #print(f"Error retrieving conversation history: {str(e)}")
         return None
 
 
@@ -45,7 +45,7 @@ def list_conversations(user_id):
         
         return items
     except Exception as e:
-        print(f"Error fetching conversations: {str(e)}")
+        #print(f"Error fetching conversations: {str(e)}")
         return []
 
 def update_conversation_thread(conversation_id, user_id, user_message, assistant_reply):
@@ -58,7 +58,7 @@ def update_conversation_thread(conversation_id, user_id, user_message, assistant
         
         # Verify that the user_id matches
         if conversation_doc['user_id'] != user_id:
-            print(f"Unauthorized update attempt by user {user_id} on conversation {conversation_id}")
+            #print(f"Unauthorized update attempt by user {user_id} on conversation {conversation_id}")
             raise Exception("Unauthorized access")
         
         # Append the new user message and assistant reply to the conversation thread
@@ -101,7 +101,7 @@ def delete_conversation_thread(conversation_id, user_id):
 
         # Verify that the user_id matches
         if conversation_doc['user_id'] != user_id:
-            print(f"Unauthorized delete attempt by user {user_id} on conversation {conversation_id}")
+            #print(f"Unauthorized delete attempt by user {user_id} on conversation {conversation_id}")
             raise Exception("Unauthorized access")
 
         # Delete the conversation document
@@ -113,10 +113,10 @@ def delete_conversation_thread(conversation_id, user_id):
         return True
 
     except exceptions.CosmosResourceNotFoundError:
-        print(f"Conversation {conversation_id} not found")
+        #print(f"Conversation {conversation_id} not found")
         return False
     except Exception as e:
-        print(f"Error deleting conversation: {str(e)}")
+        #print(f"Error deleting conversation: {str(e)}")
         raise e
 
 def add_system_message_to_conversation(conversation_id, user_id, content):
@@ -129,7 +129,7 @@ def add_system_message_to_conversation(conversation_id, user_id, content):
 
         # Verify that the user_id matches
         if conversation_doc['user_id'] != user_id:
-            print(f"Unauthorized access attempt by user {user_id} on conversation {conversation_id}")
+            #print(f"Unauthorized access attempt by user {user_id} on conversation {conversation_id}")
             raise Exception("Unauthorized access")
 
         # Append the system message
@@ -145,8 +145,8 @@ def add_system_message_to_conversation(conversation_id, user_id, content):
 
     except exceptions.CosmosResourceNotFoundError:
         # Conversation doesn't exist
-        print(f"Conversation {conversation_id} not found")
+        #print(f"Conversation {conversation_id} not found")
         raise Exception("Conversation not found")
     except Exception as e:
-        print(f"Error adding system message to conversation: {str(e)}")
+        #print(f"Error adding system message to conversation: {str(e)}")
         raise e

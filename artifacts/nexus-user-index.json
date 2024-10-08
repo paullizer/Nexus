@@ -207,7 +207,25 @@
     "k1": null,
     "b": null
   },
-  "semantic": null,
+  "semantic": {
+    "defaultConfiguration": null,
+    "configurations": [
+      {
+        "name": "nexus-user-index-semantic-configuration",
+        "prioritizedFields": {
+          "titleField": {
+            "fieldName": "file_name"
+          },
+          "prioritizedContentFields": [
+            {
+              "fieldName": "chunk_text"
+            }
+          ],
+          "prioritizedKeywordsFields": []
+        }
+      }
+    ]
+  },
   "vectorSearch": {
     "algorithms": [
       {

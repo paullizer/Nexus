@@ -3,7 +3,7 @@ import requests
 from datetime import datetime, timezone
 from flask import Flask, redirect, jsonify, render_template, request, send_from_directory, url_for, flash, session
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
 import openai
 from azure.cosmos import CosmosClient, exceptions
@@ -17,6 +17,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
+from azure.search.documents.models import VectorizedQuery
 
 #***************** Environment Variables *****************
 # This file supports all configuration for the application; 

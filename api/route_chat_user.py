@@ -1,4 +1,4 @@
-from config import openai, AZURE_OPENAI_LLM_MODEL, jsonify, request, jsonify, secure_filename, os, tempfile, json, documents_container, search_client_user
+from config import openai, AZURE_OPENAI_LLM_MODEL, jsonify, request, jsonify, secure_filename, os, tempfile, json, documents_container, search_client_user, uuid
 from process_conversation import get_conversation_history, list_conversations, update_conversation_thread, delete_conversation_thread, add_system_message_to_conversation
 from process_content import extract_text_file, extract_markdown_file, extract_content_with_azure_di
 from process_internet import get_bing_search_results, extract_snippets_from_results
@@ -6,44 +6,6 @@ from process_internet import get_bing_search_results, extract_snippets_from_resu
 #***************** Chat *****************
 # The chat routes handle the conversational AI functionality
 def register_route_chat_user(app):
-    @app.route('/api/chat/conversations', methods=['GET'])
-    def get_conversations():
-        user_id = request.args.get('user_id')
-        if not user_id:
-            return jsonify({'error': 'Missing user_id'}), 400
-        
-        # Fetch the list of conversations for the user
-        conversation_list = list_conversations(user_id)
-        
-        if conversation_list:
-            return jsonify(conversation_list), 200
-        else:
-            return jsonify({'error': 'No conversations found'}), 404
-
-    @app.route('/api/chat/conversation/<conversation_id>', methods=['GET', 'DELETE'])
-    def handle_conversation(conversation_id):
-        user_id = request.args.get('user_id')
-        if not user_id:
-            return jsonify({'error': 'Missing user_id'}), 400
-
-        if request.method == 'GET':
-            # Fetch the conversation from Cosmos DB
-            conversation_history = get_conversation_history(conversation_id, user_id)
-            if conversation_history:
-                return jsonify(conversation_history), 200
-            else:
-                return jsonify({'error': 'Conversation not found or access denied'}), 404
-
-        elif request.method == 'DELETE':
-            try:
-                success = delete_conversation_thread(conversation_id, user_id)
-                if success:
-                    return jsonify({'message': 'Conversation deleted successfully'}), 200
-                else:
-                    return jsonify({'error': 'Conversation not found or access denied'}), 404
-            except Exception as e:
-                return jsonify({'error': str(e)}), 500
-
     @app.route('/api/chat', methods=['POST'])
     def chat():
         data = request.get_json()
@@ -55,7 +17,7 @@ def register_route_chat_user(app):
             return jsonify({'error': 'Missing user_id or message'}), 400
 
         if not conversation_id:
-            return jsonify({'error': 'Missing conversation_id'}), 400
+            conversation_id = str(uuid.uuid4())
 
         # Retrieve conversation history (thread)
         conversation_history = get_conversation_history(conversation_id, user_id)
@@ -100,6 +62,45 @@ def register_route_chat_user(app):
             return jsonify({'reply': reply, 'conversation_id': conversation_id}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+        
+    @app.route('/api/chat/conversations', methods=['GET'])
+    def get_conversations():
+        user_id = request.args.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'Missing user_id'}), 400
+        
+        # Fetch the list of conversations for the user
+        conversation_list = list_conversations(user_id)
+        
+        if conversation_list:
+            return jsonify(conversation_list), 200
+        else:
+            return jsonify({'error': 'No conversations found'}), 404
+
+    @app.route('/api/chat/conversation/<conversation_id>', methods=['GET', 'DELETE'])
+    def handle_conversation(conversation_id):
+        user_id = request.args.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'Missing user_id'}), 400
+
+        if request.method == 'GET':
+            # Fetch the conversation from Cosmos DB
+            conversation_history = get_conversation_history(conversation_id, user_id)
+            if conversation_history:
+                return jsonify(conversation_history), 200
+            else:
+                return jsonify({'error': 'Conversation not found or access denied'}), 404
+
+        elif request.method == 'DELETE':
+            try:
+                success = delete_conversation_thread(conversation_id, user_id)
+                if success:
+                    return jsonify({'message': 'Conversation deleted successfully'}), 200
+                else:
+                    return jsonify({'error': 'Conversation not found or access denied'}), 404
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+
 
     @app.route('/api/chat/file', methods=['POST'])
     def chat_file():

@@ -59,9 +59,23 @@ def chunk_text(text, chunk_size=500, overlap=50):
     return chunks
 
 def generate_embedding(text):
-    response = openai.Embedding.create(
-        input=text,
-        engine=AZURE_OPENAI_EMBEDDING_MODEL
-    )
-    embedding = response['data'][0]['embedding']
-    return embedding
+    #print("Function generate_embedding called")
+    #print(f"Text input for embedding: {text[:100]}...")  # Print the first 100 characters of the text to avoid excessive output
+
+    try:
+        # Make the call to OpenAI for embedding generation
+        response = openai.Embedding.create(
+            input=text,
+            engine=AZURE_OPENAI_EMBEDDING_MODEL
+        )
+        #print("OpenAI API call successful")
+
+        # Extract embedding from the response
+        embedding = response['data'][0]['embedding']
+        #print(f"Embedding generated successfully: Length {len(embedding)}")
+        return embedding
+
+    except Exception as e:
+        #print(f"Error in generating embedding: {str(e)}")
+        return None
+
