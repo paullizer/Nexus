@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: Nexus API
-  version: "0.21"
-  description: API for managing chat conversations and documents
+  version: "0.42"
+  description: API for managing chat conversations, documents, and internet searches.
 servers:
   - url: /api
 
@@ -19,12 +19,6 @@ paths:
       responses:
         '200':
           description: A list of conversations
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
         '400':
           description: Missing user_id
         '404':
@@ -134,6 +128,36 @@ paths:
         '500':
           description: Server error
 
+  /api/chat/internet:
+    post:
+      summary: Perform an internet search and add the results to a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                question:
+                  type: string
+                conversation_id:
+                  type: string
+              required:
+                - user_id
+                - question
+                - conversation_id
+      responses:
+        '200':
+          description: Internet search results added to conversation
+        '400':
+          description: Missing question, user_id, or conversation_id
+        '404':
+          description: No relevant information found
+        '500':
+          description: Server error
+
   /api/documents:
     get:
       summary: Get user documents
@@ -150,7 +174,7 @@ paths:
           description: Missing user_id
 
     post:
-      summary: Upload a user document
+      summary: Upload a new user document
       requestBody:
         required: true
         content:
@@ -171,3 +195,96 @@ paths:
           description: Document uploaded
         '400':
           description: Missing user_id
+
+  /api/documents/{document_id}:
+    get:
+      summary: Get a specific user document by document_id
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested document
+        '400':
+          description: Missing user_id
+        '404':
+          description: Document not found
+
+    delete:
+      summary: Delete a specific document by document_id
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Document deleted successfully
+        '400':
+          description: Missing user_id
+        '404':
+          description: Document not found
+
+  /api/documents/{document_id}/chunks:
+    get:
+      summary: Get document chunks by document_id
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The chunks of the requested document
+        '400':
+          description: Missing user_id
+        '500':
+          description: Error retrieving chunks
+
+  /api/documents/search:
+    post:
+      summary: Search document chunks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                query:
+                  type: string
+                top_n:
+                  type: integer
+                  default: 5
+              required:
+                - user_id
+                - query
+      responses:
+        '200':
+          description: Search results
+        '400':
+          description: Missing user_id or query
+        '500':
+          description: Error during search

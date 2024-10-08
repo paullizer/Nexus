@@ -1,6 +1,6 @@
 import os
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import Flask, redirect, jsonify, render_template, request, send_from_directory, url_for, flash, session
 import uuid
 from datetime import datetime
@@ -13,6 +13,10 @@ from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.ai.documentintelligence.models import AnalyzeResult, AnalyzeOutputOption
 import markdown
 import json
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from azure.search.documents import SearchClient
+from azure.search.documents.indexes import SearchIndexClient
 
 #***************** Environment Variables *****************
 # This file supports all configuration for the application; 
@@ -37,6 +41,11 @@ AZURE_DOCUMENT_INTELLIGENCE_KEY = os.environ.get("AZURE_DOCUMENT_INTELLIGENCE_KE
 AZURE_BING_KEY = os.environ.get('AZURE_BING_KEY')
 AZURE_BING_ENDPOINT = os.environ.get('AZURE_BING_ENDPOINT')
 
+AZURE_AI_SEARCH_ENDPOINT = os.environ.get('AZURE_AI_SEARCH_ENDPOINT')
+AZURE_AI_SEARCH_KEY = os.environ.get('AZURE_AI_SEARCH_KEY')
+AZURE_AI_SEARCH_USER_INDEX = os.environ.get('AZURE_AI_SEARCH_USER_INDEX')
+AZURE_AI_SEARCH_GROUP_INDEX= os.environ.get('AZURE_AI_SEARCH_GROUP_INDEX')
+
 #***************** Clients *****************
 
 openai.api_type = AZURE_OPENAI_API_TYPE
@@ -52,4 +61,16 @@ documents_container = database.get_container_client(AZURE_COSMOS_DOCUMENTS_CONTA
 document_intelligence_client = DocumentIntelligenceClient(
     endpoint=AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT,
     credential=AzureKeyCredential(AZURE_DOCUMENT_INTELLIGENCE_KEY)
+)
+
+search_client_user = SearchClient(
+    endpoint=AZURE_AI_SEARCH_ENDPOINT,
+    index_name=AZURE_AI_SEARCH_USER_INDEX,
+    credential=AzureKeyCredential(AZURE_AI_SEARCH_KEY)
+)
+
+search_client_group = SearchClient(
+    endpoint=AZURE_AI_SEARCH_ENDPOINT,
+    index_name=AZURE_AI_SEARCH_GROUP_INDEX,
+    credential=AzureKeyCredential(AZURE_AI_SEARCH_KEY)
 )

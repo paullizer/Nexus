@@ -11,3 +11,8 @@ Flask-Session==0.8.0
 bleach==6.1.0
 docx2txt==0.8
 numpy==2.1.1
+scikit-learn==1.5.2
+SciPy==1.14.1
+joblib==1.4.2
+threadpoolctl==3.5.0
+azure-search-documents==11.5.1
