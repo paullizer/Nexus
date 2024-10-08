@@ -4,10 +4,10 @@
 
 Key Features:
 - **RAG for Individuals & Groups**: Seamless integration with Cosmos DB for personalized document and data retrieval and Azure AI Search for team-based intelligence.
-- **AI-Powered Pipelines**: Build repeatable workflows using AI to summarize, generate, or process documents by analyzing previous formats, structures, and disparate data sources.
+- **AI-Powered transform workflows**: Build repeatable workflows using AI to summarize, generate, or process documents by analyzing previous formats, structures, and disparate data sources.
 - **Advanced Chat Capabilities**: Chat directly with AI models, including options for RAG-enhanced conversations or accessing live internet data.
 - **Secure History & Logging**: Maintain detailed logs and history for analysis, security auditing, and optimization of top results.
-- **Private & Group Pipelines**: Customize workflows for individual or team-based operations, ensuring adaptable and scalable solutions.
+- **Private & Group transform workflows**: Customize workflows for individual or team-based operations, ensuring adaptable and scalable solutions.
 
 Nexus empowers enterprises to enhance productivity, ensure efficient information retrieval, and automate content creation while keeping data secure and auditable. Whether you're managing documents, summarizing data, or building complex workflows, **Nexus** provides the tools to streamline your processes with cutting-edge AI capabilities.
 
@@ -22,9 +22,32 @@ Create APIs for user capabilities first
 - [x] private chat with model , add one or more specific public websites to search to chat
 - [x] private RAG (upload file, chunk file, embed chunk)
 - [x] private chat with internet
-- [ ] private pipeline
+- [ ] private transform with prompt
+- [ ] private transform with file to action
+- [ ] private transform with internet search to action
+- [ ] private transform with all of a specific document's chunks from AI search to action
+- [ ] private transform with search user index to get X number of top chunks from AI search to action
 - [ ] share conversation
-- [ ] share pipeline
+- [ ] share workflow
+- [ ] share action
+
+Create APIs for group capabilities second
+
+- [ ] group RAG (upload file, chunk file, embed chunk)
+- [ ] manage user permissions to group (admin or user)
+- [ ] manage access to group (public or private)
+- [ ] manage access to private group
+- [ ] using permissions to group, chat with group's RAG
+- [ ] using permissions to group, transform with all of a specific document's chunks from AI search to action
+  - [ ] users can add files from groups at their transform screen, this will be used to update APIs to reflect this access (if necessary, it may not require changes at the API layer and are just managed at the front end)
+- [ ] using permissions to group, transform with search user index to get X number of top chunks from AI search to action
+  - [ ] users can add files from groups at their transform screen, this will be used to update APIs to reflect this access (if necessary, it may not require changes at the API layer and are just managed at the front end)
+
+Create front end for user capabilities
+
+- [ ] more to come, writing down ideas.
+- [ ] example workflows
+- [ ] example actions
 
 ## Goals
 
@@ -49,21 +72,21 @@ Create APIs for user capabilities first
     - can control access to the group rag (public or private with permissions)
     - can control who is a user (read only, cannot add new files) and who is a admin (can read and add new files and delete existing files)
     - cannot share individual file
-- provide repeatable pipelines (workflows) using AI to perform one or more tasks using rag or just in time input from user; tasks like summarize or generate a document using the format and structure of previous documents plus disparate data sources
-    - need to think through this more, pipelines can be shared but is access to pipeline shared or the code to create a pipeline shared?
-    - pipeline can be private
-        - cannot share access to pipeline
-        - can share a copy of the pipeline (JSON?)
-        - can import other pipeline copies
-    - pipeline can be group (public or private with permissions)
-        - if add group RAG then permissions of pipeline cannot exceed RAG permissions and only that group RAG can be used in the pipeline
+- provide repeatable transform workflows (workflows) using AI to perform one or more tasks using rag or just in time input from user; tasks like summarize or generate a document using the format and structure of previous documents plus disparate data sources
+    - need to think through this more, transform workflows can be shared but is access to transform workflow shared or the code to create a transform workflow shared?
+    - transform workflow can be private
+        - cannot share access to transform workflow
+        - can share a copy of the transform workflow (JSON?)
+        - can import other transform workflow copies
+    - transform workflow can be group (public or private with permissions)
+        - if add group RAG then permissions of transform workflow cannot exceed RAG permissions and only that group RAG can be used in the transform workflow
         - if public RAG is used then other public RAG can be used
-        - can share a copy of the pipeline (JSON?)
-        - can import other pipeline copies
-    - pipeline can use specific files or entire private or group source
-    - pipeline can have one task or many tasks
-    - pipeline next task can include previous task output or not
-    - pipeline can be a single task
+        - can share a copy of the transform workflow (JSON?)
+        - can import other transform workflow copies
+    - transform workflow can use specific files or entire private or group source
+    - transform workflow can have one task or many tasks
+    - transform workflow next task can include previous task output or not
+    - transform workflow can be a single task
 - provide history, logging for security or for analysis on top requests
 
 
