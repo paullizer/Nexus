@@ -1,6 +1,6 @@
 # Nexus
 
-**Nexus** is an AI-powered platform designed to streamline enterprise operations by providing intelligent workflows, document generation, and advanced search capabilities. The application leverages the power of **Cosmos DB** with vector search for personalized Retrieval-Augmented Generation (RAG) and **Azure AI Search** for group-based tasks. 
+**Nexus** is an AI-powered platform designed to streamline enterprise operations by providing intelligent workflows, document generation, and advanced search capabilities. The application leverages the power of **Cosmos DB** with vector search for personalized Retrieval-Augmented Generation (RAG) and **Azure AI Search** for group-based actions. 
 
 Key Features:
 - **RAG for Individuals & Groups**: Seamless integration with Cosmos DB for personalized document and data retrieval and Azure AI Search for team-based intelligence.
@@ -72,7 +72,7 @@ Create front end for user capabilities
     - can control access to the group rag (public or private with permissions)
     - can control who is a user (read only, cannot add new files) and who is a admin (can read and add new files and delete existing files)
     - cannot share individual file
-- provide repeatable transform workflows (workflows) using AI to perform one or more tasks using rag or just in time input from user; tasks like summarize or generate a document using the format and structure of previous documents plus disparate data sources
+- provide repeatable transform workflows (workflows) using AI to perform one or more actions using rag or just in time input from user; actions like summarize or generate a document using the format and structure of previous documents plus disparate data sources
     - need to think through this more, transform workflows can be shared but is access to transform workflow shared or the code to create a transform workflow shared?
     - transform workflow can be private
         - cannot share access to transform workflow
@@ -83,10 +83,10 @@ Create front end for user capabilities
         - if public RAG is used then other public RAG can be used
         - can share a copy of the transform workflow (JSON?)
         - can import other transform workflow copies
-    - transform workflow can use specific files or entire private or group source
-    - transform workflow can have one task or many tasks
-    - transform workflow next task can include previous task output or not
-    - transform workflow can be a single task
+    - transform workflow can use specific user documents
+    - transform workflow can have one action or many actions
+    - transform workflow next action can include previous action output or not
+    - transform workflow can be a single action
 - provide history, logging for security or for analysis on top requests
 
 
