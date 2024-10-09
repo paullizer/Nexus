@@ -4,7 +4,7 @@ from route_document_user import register_route_document_user
 
 #***************** Flask App *****************
 app = Flask(__name__)
-app.config['VERSION'] = '0.66'
+app.config['VERSION'] = '0.68'
 
 #***************** Routes *****************
 # Routes that handle the API endpoints for the application

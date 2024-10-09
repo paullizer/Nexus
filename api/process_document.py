@@ -8,23 +8,25 @@ def get_user_documents(user_id):
     try:
         # Query to get the latest version of each document for the user
         query = """
-            SELECT TOP 100 c.id, c.file_name, c.user_id, c.upload_date, c.version
+            SELECT c.file_name, c.id, c.upload_date, c.user_id, c.version
             FROM c
             WHERE c.user_id = @user_id
-            ORDER BY c.upload_date DESC
         """
         parameters = [{"name": "@user_id", "value": user_id}]
+        
         documents = list(documents_container.query_items(query=query, parameters=parameters, enable_cross_partition_query=True))
 
-        # Process to get the latest version of each document
+        # Dictionary to keep track of the latest version for each file
         latest_documents = {}
-        for document in documents:
-            doc_id = document['id']
-            if doc_id not in latest_documents or document['version'] > latest_documents[doc_id]['version']:
-                latest_documents[doc_id] = document
 
+        for doc in documents:
+            file_name = doc['file_name']
+            # If this file_name is not in the dict or if this version is greater, update
+            if file_name not in latest_documents or doc['version'] > latest_documents[file_name]['version']:
+                latest_documents[file_name] = doc
+                
+        # Convert the dict to a list for the response
         return jsonify({"documents": list(latest_documents.values())}), 200
-
     except Exception as e:
         return jsonify({'error': f'Error retrieving documents: {str(e)}'}), 500
 
