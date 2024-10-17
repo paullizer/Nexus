@@ -335,26 +335,18 @@ def delete_user_document_version_chunks(document_id, version):
         ]
     )
 
-def hybrid_search(query, user_id, top_n=3):
-    #print(f"Function hybrid_search called with query: '{query}', user_id: '{user_id}', top_n: {top_n}")
-
+def hybrid_search(query, user_id, top_n):
     try:
         # Step 1: Generate the query embedding
-        #print(f"Generating embedding for the query: '{query}'")
         query_embedding = generate_embedding(query)
 
         if query_embedding is None:
-            #print("Error: Failed to generate embedding for the query")
             return None
-
-        #print(f"Query embedding generated: {query_embedding[:5]}...")  # Print the first few values for debugging
 
         # Step 2: Create a vectorized query
         vector_query = VectorizedQuery(vector=query_embedding, k_nearest_neighbors=top_n, fields="embedding")
-        #print(f"Vectorized query created: {vector_query}")
 
         # Step 3: Perform the hybrid search
-        #print(f"Performing hybrid search for user_id: '{user_id}' with top {top_n} results")
         results = search_client_user.search(
             search_text=query,
             vector_queries=[vector_query],
@@ -362,9 +354,15 @@ def hybrid_search(query, user_id, top_n=3):
             select=["id", "chunk_text", "chunk_id", "file_name", "user_id", "version", "chunk_sequence", "upload_date"]
         )
         
-        return results
+        # Step 4: Collect top_n results
+        limited_results = []
+        for i, result in enumerate(results):
+            if i >= top_n:
+                break
+            limited_results.append(result)
+
+        return limited_results
 
     except Exception as e:
-        #print(f"Error during hybrid search: {str(e)}")
         return None
 

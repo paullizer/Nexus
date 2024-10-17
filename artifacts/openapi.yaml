@@ -1,21 +1,23 @@
 openapi: 3.0.0
 info:
   title: Nexus API
-  version: "0.43"
+  version: "0.75"
   description: API for managing chat conversations, documents, and internet searches.
 servers:
   - url: /api
-
 paths:
   /api/chat:
     post:
-      summary: Post a message to a conversation
+      summary: "Chat with the assistant"
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - user_id
+                - message
               properties:
                 user_id:
                   type: string
@@ -23,21 +25,29 @@ paths:
                   type: string
                 conversation_id:
                   type: string
-              required:
-                - user_id
-                - message
-                - conversation_id
       responses:
         '200':
-          description: Chat response
+          description: "Successful response"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reply:
+                    type: string
+                  conversation_id:
+                    type: string
         '400':
-          description: Missing user_id or message
+          description: "Missing user_id or message"
+          content:
+            application/json
         '500':
-          description: Server error
-          
+          description: "Internal server error"
+          content:
+            application/json
   /api/chat/conversations:
     get:
-      summary: Get conversations for a user
+      summary: "Get list of conversations"
       parameters:
         - name: user_id
           in: query
@@ -46,15 +56,24 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of conversations
+          description: "List of conversations"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
         '400':
-          description: Missing user_id
+          description: "Missing user_id"
+          content:
+            application/json
         '404':
-          description: No conversations found
-
+          description: "No conversations found"
+          content:
+            application/json
   /api/chat/conversation/{conversation_id}:
     get:
-      summary: Get conversation history by conversation_id
+      summary: "Get a conversation"
       parameters:
         - name: conversation_id
           in: path
@@ -68,14 +87,19 @@ paths:
             type: string
       responses:
         '200':
-          description: Conversation history
+          description: "Conversation history"
+          content:
+            application/json
         '400':
-          description: Missing user_id
+          description: "Missing user_id"
+          content:
+            application/json
         '404':
-          description: Conversation not found or access denied
-
+          description: "Conversation not found or access denied"
+          content:
+            application/json
     delete:
-      summary: Delete conversation by conversation_id
+      summary: "Delete a conversation"
       parameters:
         - name: conversation_id
           in: path
@@ -89,23 +113,34 @@ paths:
             type: string
       responses:
         '200':
-          description: Conversation deleted successfully
+          description: "Conversation deleted successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
+          description: "Missing user_id"
+          content:
+            application/json
         '404':
-          description: Conversation not found or access denied
+          description: "Conversation not found or access denied"
+          content:
+            application/json
         '500':
-          description: Server error
-
+          description: "Internal server error"
+          content:
+            application/json
   /api/chat/file:
     post:
-      summary: Upload a file to a conversation
+      summary: "Upload a file to the conversation"
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - user_id
+                - conversation_id
+                - file
               properties:
                 user_id:
                   type: string
@@ -114,29 +149,32 @@ paths:
                 file:
                   type: string
                   format: binary
-              required:
-                - user_id
-                - conversation_id
-                - file
       responses:
         '200':
-          description: File content added to conversation
+          description: "File content added successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id, file, or conversation_id
-        '403':
-          description: Conversation not found or access denied
+          description: "Missing user_id, conversation_id, or file"
+          content:
+            application/json
         '500':
-          description: Server error
-
+          description: "Error processing file"
+          content:
+            application/json
   /api/chat/internet:
     post:
-      summary: Perform an internet search and add the results to a conversation
+      summary: "Perform an internet search and add results to conversation"
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - user_id
+                - question
+                - conversation_id
               properties:
                 user_id:
                   type: string
@@ -144,23 +182,26 @@ paths:
                   type: string
                 conversation_id:
                   type: string
-              required:
-                - user_id
-                - question
-                - conversation_id
       responses:
         '200':
-          description: Internet search results added to conversation
+          description: "Internet search results added successfully"
+          content:
+            application/json
         '400':
-          description: Missing question, user_id, or conversation_id
+          description: "Missing question, user_id, or conversation_id"
+          content:
+            application/json
         '404':
-          description: No relevant information found
+          description: "No relevant information found"
+          content:
+            application/json
         '500':
-          description: Server error
-
+          description: "Failed to fetch search results"
+          content:
+            application/json
   /api/documents:
     get:
-      summary: Get user documents
+      summary: "Retrieve list of documents"
       parameters:
         - name: user_id
           in: query
@@ -169,36 +210,42 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of user documents
+          description: "List of documents"
+          content:
+            application/json
         '400':
-          description: Missing user_id
-
+          description: "Missing user_id"
+          content:
+            application/json
     post:
-      summary: Upload a new user document
+      summary: "Upload a new document"
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - user_id
+                - file
               properties:
                 user_id:
                   type: string
                 file:
                   type: string
                   format: binary
-              required:
-                - user_id
-                - file
       responses:
         '200':
-          description: Document uploaded
+          description: "Document uploaded successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
-
+          description: "Missing user_id or file"
+          content:
+            application/json
   /api/documents/{document_id}:
     get:
-      summary: Get a specific user document by document_id
+      summary: "Retrieve a specific document"
       parameters:
         - name: document_id
           in: path
@@ -212,38 +259,48 @@ paths:
             type: string
       responses:
         '200':
-          description: The requested document
+          description: "Document retrieved successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
-        '404':
-          description: Document not found
-
+          description: "Missing user_id"
+          content:
+            application/json
     delete:
-      summary: Delete a specific document by document_id
+      summary: "Delete a document and all its versions"
       parameters:
         - name: document_id
           in: path
           required: true
           schema:
             type: string
-        - name: user_id
-          in: query
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
       responses:
         '200':
-          description: Document deleted successfully
+          description: "Document deleted successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
-        '404':
-          description: Document not found
+          description: "Missing user_id"
+          content:
+            application/json
         '500':
-          description: Error deleting document
-
+          description: "Error deleting document"
+          content:
+            application/json
   /api/documents/{document_id}/versions:
     get:
-      summary: Get all versions of a document by document_id
+      summary: "Get all versions of a document"
       parameters:
         - name: document_id
           in: path
@@ -257,17 +314,24 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of document versions
+          description: "List of document versions"
+          content:
+            application/json
         '400':
-          description: Missing user_id
+          description: "Missing user_id"
+          content:
+            application/json
         '404':
-          description: No versions found
+          description: "No versions found"
+          content:
+            application/json
         '500':
-          description: Error retrieving document versions
-
+          description: "Error retrieving document versions"
+          content:
+            application/json
   /api/documents/{document_id}/version/{version}:
     get:
-      summary: Get a specific version of a document
+      summary: "Retrieve a specific version of a document"
       parameters:
         - name: document_id
           in: path
@@ -286,16 +350,15 @@ paths:
             type: string
       responses:
         '200':
-          description: The requested document version
+          description: "Document version retrieved successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
-        '404':
-          description: Document version not found
-        '500':
-          description: Error retrieving document version
-
+          description: "Missing user_id"
+          content:
+            application/json
     delete:
-      summary: Delete a specific version of a document
+      summary: "Delete a specific version of a document"
       parameters:
         - name: document_id
           in: path
@@ -307,24 +370,33 @@ paths:
           required: true
           schema:
             type: string
-        - name: user_id
-          in: query
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
       responses:
         '200':
-          description: Document version deleted successfully
+          description: "Document version deleted successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
-        '404':
-          description: Document version not found
+          description: "Missing user_id"
+          content:
+            application/json
         '500':
-          description: Error deleting document version
-
+          description: "Error deleting document version"
+          content:
+            application/json
   /api/documents/{document_id}/chunks:
     get:
-      summary: Get chunks of a document by document_id
+      summary: "Get chunks of the latest version of a document"
       parameters:
         - name: document_id
           in: path
@@ -338,17 +410,24 @@ paths:
             type: string
       responses:
         '200':
-          description: The chunks of the requested document
+          description: "Chunks retrieved successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
+          description: "Missing user_id"
+          content:
+            application/json
         '404':
-          description: No chunks found
+          description: "No chunks found"
+          content:
+            application/json
         '500':
-          description: Error retrieving chunks
-
+          description: "Error retrieving chunks"
+          content:
+            application/json
   /api/documents/{document_id}/version/{version}/chunks:
     get:
-      summary: Get chunks of a specific version of a document
+      summary: "Get chunks of a specific document version"
       parameters:
         - name: document_id
           in: path
@@ -367,23 +446,33 @@ paths:
             type: string
       responses:
         '200':
-          description: The chunks of the requested document version
+          description: "Chunks retrieved successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id
+          description: "Missing user_id"
+          content:
+            application/json
         '404':
-          description: No chunks found for the specified document version
+          description: "No chunks found"
+          content:
+            application/json
         '500':
-          description: Error retrieving chunks
-
+          description: "Error retrieving chunks"
+          content:
+            application/json
   /api/documents/search:
     post:
-      summary: Search document chunks
+      summary: "Search document chunks"
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - user_id
+                - query
               properties:
                 user_id:
                   type: string
@@ -392,13 +481,322 @@ paths:
                 top_n:
                   type: integer
                   default: 5
-              required:
-                - user_id
-                - query
       responses:
         '200':
-          description: Search results
+          description: "Search results retrieved successfully"
+          content:
+            application/json
         '400':
-          description: Missing user_id or query
+          description: "Missing user_id or query"
+          content:
+            application/json
         '500':
-          description: Error during search
+          description: "Error during search"
+          content:
+            application/json
+  /api/workflows:
+    get:
+      summary: "Get all workflows for a user"
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Workflows retrieved successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id"
+          content:
+            application/json
+        '500':
+          description: "Error retrieving workflows"
+          content:
+            application/json
+    post:
+      summary: "Create a new workflow"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - name
+              properties:
+                user_id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: "Workflow created successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id or name"
+          content:
+            application/json
+        '500':
+          description: "Error creating workflow"
+          content:
+            application/json
+  /api/workflows/{workflow_id}:
+    get:
+      summary: "Retrieve a specific workflow"
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Workflow retrieved successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id"
+          content:
+            application/json
+        '404':
+          description: "Workflow not found"
+          content:
+            application/json
+        '500':
+          description: "Error retrieving workflow"
+          content:
+            application/json
+    put:
+      summary: "Update a workflow"
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: "Workflow updated successfully"
+          content:
+            application/json
+        '400':
+          description: "Invalid update data"
+          content:
+            application/json
+        '404':
+          description: "Workflow not found"
+          content:
+            application/json
+        '500':
+          description: "Error updating workflow"
+          content:
+            application/json
+    delete:
+      summary: "Delete a workflow"
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
+      responses:
+        '200':
+          description: "Workflow deleted successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id"
+          content:
+            application/json
+        '500':
+          description: "Error deleting workflow"
+          content:
+            application/json
+  /api/workflows/{workflow_id}/execute:
+    post:
+      summary: "Execute a workflow"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
+      responses:
+        '200':
+          description: "Workflow executed successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id"
+          content:
+            application/json
+        '404':
+          description: "Workflow not found"
+          content:
+            application/json
+  /api/workflows/{workflow_id}/executions/{id}:
+    get:
+      summary: "Get execution status of a workflow"
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Execution status retrieved successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id"
+          content:
+            application/json
+        '404':
+          description: "Execution not found"
+          content:
+            application/json
+        '500':
+          description: "Error retrieving execution status"
+          content:
+            application/json
+  /api/workflows/{workflow_id}/executions/{id}/result:
+    get:
+      summary: "Get execution result of a workflow"
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Execution result retrieved successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id"
+          content:
+            application/json
+        '404':
+          description: "Execution not found"
+          content:
+            application/json
+        '500':
+          description: "Error retrieving execution result"
+          content:
+            application/json
+  /api/workflows/{workflow_id}/actions:
+    post:
+      summary: "Add actions to a workflow"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - actions
+              properties:
+                user_id:
+                  type: string
+                actions:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - action_id
+                    properties:
+                      action_id:
+                        type: string
+                      parameters:
+                        type: object
+      responses:
+        '200':
+          description: "Actions added successfully"
+          content:
+            application/json
+        '400':
+          description: "Missing user_id or invalid actions list"
+          content:
+            application/json
+        '500':
+          description: "Error adding actions to workflow"
+          content:
+            application/json
+  /api/action:
+    post:
+      summary: "Create an action"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                # Define action properties as needed
+      responses:
+        '201':
+          description: "Action created successfully"
+          content:
+            application/json

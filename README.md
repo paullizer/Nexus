@@ -23,6 +23,11 @@ Create APIs for user capabilities first
 - [x] private RAG (upload file, chunk file, embed chunk)
 - [x] private chat with internet
 - [ ] private transform with prompt
+  - [x] list, create, update, and delete workflow
+  - [x] execute workflow
+  - [ ] get execution status
+  - [ ] get execution result
+
 - [ ] private transform with file to action
 - [ ] private transform with internet search to action
 - [ ] private transform with all of a specific document's chunks from AI search to action
